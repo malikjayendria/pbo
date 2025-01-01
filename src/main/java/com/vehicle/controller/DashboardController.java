@@ -23,9 +23,10 @@ public class DashboardController {
     private MotorcycleService motorcycleService;
 
     @GetMapping
-    public String dashboard(Model model) {
-        // TODO: Get actual logged in user ID
-        Long userId = 1L; // Temporary, replace with actual user session
+    public String dashboard(@SessionAttribute(name = "userId", required = false) Long userId, Model model) {
+        if (userId == null) {
+            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+        }
         model.addAttribute("vehicles", vehicleService.getVehiclesByUserId(userId));
         model.addAttribute("carDto", new CarDto());
         model.addAttribute("motorcycleDto", new MotorcycleDto());
@@ -33,35 +34,46 @@ public class DashboardController {
     }
 
     @PostMapping("/car/add")
-    public String addCar(@ModelAttribute CarDto carDto) {
-        Long userId = 1L; // Temporary, replace with actual user session
+    public String addCar(@ModelAttribute CarDto carDto, @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+        }
         carService.saveCar(carDto, userId);
         return "redirect:/dashboard";
     }
 
     @PostMapping("/motorcycle/add")
-    public String addMotorcycle(@ModelAttribute MotorcycleDto motorcycleDto) {
-        Long userId = 1L; // Temporary, replace with actual user session
+    public String addMotorcycle(@ModelAttribute MotorcycleDto motorcycleDto, @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+        }
         motorcycleService.saveMotorcycle(motorcycleDto, userId);
         return "redirect:/dashboard";
     }
 
     @PostMapping("/car/update")
-    public String updateCar(@ModelAttribute CarDto carDto) {
-        Long userId = 1L; // Temporary, replace with actual user session
+    public String updateCar(@ModelAttribute CarDto carDto, @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+        }
         carService.updateCar(carDto, userId);
         return "redirect:/dashboard";
     }
 
     @PostMapping("/motorcycle/update")
-    public String updateMotorcycle(@ModelAttribute MotorcycleDto motorcycleDto) {
-        Long userId = 1L; // Temporary, replace with actual user session
+    public String updateMotorcycle(@ModelAttribute MotorcycleDto motorcycleDto, @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+        }
         motorcycleService.updateMotorcycle(motorcycleDto, userId);
         return "redirect:/dashboard";
     }
 
     @PostMapping("/vehicle/delete/{id}")
-    public String deleteVehicle(@PathVariable Long id) {
+    public String deleteVehicle(@PathVariable Long id, @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+        }
         vehicleService.deleteVehicle(id);
         return "redirect:/dashboard";
     }

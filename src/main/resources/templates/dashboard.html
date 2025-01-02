@@ -4,83 +4,123 @@
     <meta charset="UTF-8">
     <title>Dashboard - Vehicle Management</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
-<div class="min-h-screen p-6">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+<div class="container mx-auto px-4 py-8">
     <!-- Header -->
-    <header class="bg-white shadow-lg rounded-lg p-4 mb-6">
+    <header class="bg-white rounded-xl shadow-sm mb-8 p-6">
         <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Vehicle Management Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <i class="fas fa-car-side text-3xl text-blue-600"></i>
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                    Vehicle Management
+                </h1>
+            </div>
             <form th:action="@{/logout}" method="post">
-                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button>
+                <button type="submit"
+                        class="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition duration-300 ease-in-out transform hover:-translate-y-0.5">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
             </form>
         </div>
     </header>
 
-    <!-- Add Vehicle Buttons -->
-    <div class="grid grid-cols-2 gap-4 mb-6">
+    <!-- Action Buttons -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <button onclick="showModal('addCarModal')"
-                class="bg-blue-500 text-white p-4 rounded-lg text-center">
-            Add New Car
+                class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl shadow-sm hover:shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1">
+            <i class="fas fa-car text-4xl mb-4"></i>
+            <h3 class="text-xl font-semibold">Add New Car</h3>
+            <p class="text-blue-100 mt-2">Register a new car to your fleet</p>
         </button>
         <button onclick="showModal('addMotorcycleModal')"
-                class="bg-green-500 text-white p-4 rounded-lg text-center">
-            Add New Motorcycle
+                class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl shadow-sm hover:shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1">
+            <i class="fas fa-motorcycle text-4xl mb-4"></i>
+            <h3 class="text-xl font-semibold">Add New Motorcycle</h3>
+            <p class="text-green-100 mt-2">Register a new motorcycle to your fleet</p>
         </button>
     </div>
 
     <!-- Vehicle List -->
-    <div class="bg-white shadow-lg rounded-lg p-6">
-        <h2 class="text-xl font-bold mb-4">Your Vehicles</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="bg-white rounded-xl shadow-sm p-8">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-list-alt mr-3 text-blue-600"></i>Your Vehicles
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Vehicle Cards -->
             <div th:each="vehicle : ${vehicles}"
-                 class="border rounded-lg p-4 shadow hover:shadow-md transition-shadow">
-                <div class="flex justify-between items-start mb-2">
-                    <h3 class="text-lg font-semibold" th:text="${vehicle.brand + ' ' + vehicle.model}"></h3>
+                 class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800" th:text="${vehicle.brand + ' ' + vehicle.model}"></h3>
                     <span th:text="${vehicle.vehicleType}"
-                          class="px-2 py-1 rounded text-sm"
+                          class="px-3 py-1 rounded-full text-sm font-medium"
                           th:classappend="${vehicle.vehicleType == 'CAR'} ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'">
                         </span>
                 </div>
-                <p th:text="${'Registration: ' + vehicle.registrationNumber}"></p>
-                <p th:text="${'Year: ' + vehicle.year}"></p>
 
-                <!-- Type-specific details -->
-                <div th:if="${vehicle.vehicleType == 'CAR'}">
-                    <p th:text="${'Doors: ' + vehicle.numberOfDoors}"></p>
-                    <p th:text="${'Transmission: ' + vehicle.transmissionType}"></p>
-                    <p th:text="${'Airbag: ' + (vehicle.hasAirbag ? 'Yes' : 'No')}"></p>
-                </div>
-                <div th:if="${vehicle.vehicleType == 'MOTORCYCLE'}">
-                    <p th:text="${'Chain Type: ' + vehicle.chainType}"></p>
-                    <p th:text="${'Kickstand: ' + (vehicle.hasKickstand ? 'Yes' : 'No')}"></p>
+                <div class="space-y-2 text-gray-600">
+                    <p class="flex items-center">
+                        <i class="fas fa-fingerprint w-6 text-gray-400"></i>
+                        <span th:text="${vehicle.registrationNumber}"></span>
+                    </p>
+                    <p class="flex items-center">
+                        <i class="fas fa-calendar w-6 text-gray-400"></i>
+                        <span th:text="${vehicle.year}"></span>
+                    </p>
+
+                    <!-- Car-specific details -->
+                    <div th:if="${vehicle.vehicleType == 'CAR'}" class="space-y-2">
+                        <p class="flex items-center">
+                            <i class="fas fa-door-closed w-6 text-gray-400"></i>
+                            <span th:text="${vehicle.numberOfDoors + ' Doors'}"></span>
+                        </p>
+                        <p class="flex items-center">
+                            <i class="fas fa-cog w-6 text-gray-400"></i>
+                            <span th:text="${vehicle.transmissionType}"></span>
+                        </p>
+                        <p class="flex items-center">
+                            <i class="fas fa-shield-alt w-6 text-gray-400"></i>
+                            <span th:text="${vehicle.hasAirbag ? 'Airbag Equipped' : 'No Airbag'}"></span>
+                        </p>
+                    </div>
+
+                    <!-- Motorcycle-specific details -->
+                    <div th:if="${vehicle.vehicleType == 'MOTORCYCLE'}" class="space-y-2">
+                        <p class="flex items-center">
+                            <i class="fas fa-link w-6 text-gray-400"></i>
+                            <span th:text="${vehicle.chainType + ' Drive'}"></span>
+                        </p>
+                        <p class="flex items-center">
+                            <i class="fas fa-parking w-6 text-gray-400"></i>
+                            <span th:text="${vehicle.hasKickstand ? 'Kickstand Available' : 'No Kickstand'}"></span>
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="flex justify-end gap-2 mt-4">
-                    <!-- Di bagian tombol edit dalam card vehicle -->
+                <div class="flex justify-end gap-3 mt-6">
                     <button onclick="showEditModal(this)"
                             th:attr="data-id=${vehicle.id},
-                 data-type=${vehicle.vehicleType},
-                 data-brand=${vehicle.brand},
-                 data-model=${vehicle.model},
-                 data-year=${vehicle.year},
-                 data-registration=${vehicle.registrationNumber},
-                 data-doors=${vehicle.vehicleType == 'CAR' ? vehicle.numberOfDoors : ''},
-                 data-transmission=${vehicle.vehicleType == 'CAR' ? vehicle.transmissionType : ''},
-                 data-airbag=${vehicle.vehicleType == 'CAR' ? vehicle.hasAirbag : ''},
-                 data-chain=${vehicle.vehicleType == 'MOTORCYCLE' ? vehicle.chainType : ''},
-                 data-kickstand=${vehicle.vehicleType == 'MOTORCYCLE' ? vehicle.hasKickstand : ''}"
-                            class="bg-yellow-500 text-white px-3 py-1 rounded">
-                        Edit
+                                        data-type=${vehicle.vehicleType},
+                                        data-brand=${vehicle.brand},
+                                        data-model=${vehicle.model},
+                                        data-year=${vehicle.year},
+                                        data-registration=${vehicle.registrationNumber},
+                                        data-doors=${vehicle.vehicleType == 'CAR' ? vehicle.numberOfDoors : ''},
+                                        data-transmission=${vehicle.vehicleType == 'CAR' ? vehicle.transmissionType : ''},
+                                        data-airbag=${vehicle.vehicleType == 'CAR' ? vehicle.hasAirbag : ''},
+                                        data-chain=${vehicle.vehicleType == 'MOTORCYCLE' ? vehicle.chainType : ''},
+                                        data-kickstand=${vehicle.vehicleType == 'MOTORCYCLE' ? vehicle.hasKickstand : ''}"
+                            class="flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-300">
+                        <i class="fas fa-edit mr-2"></i>Edit
                     </button>
                     <form th:action="@{/dashboard/vehicle/delete/{id}(id=${vehicle.id})}"
                           method="post"
-                          onsubmit="return confirm('Are you sure?')">
+                          onsubmit="return confirm('Are you sure you want to delete this vehicle?')">
                         <button type="submit"
-                                class="bg-red-500 text-white px-3 py-1 rounded">
-                            Delete
+                                class="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300">
+                            <i class="fas fa-trash-alt mr-2"></i>Delete
                         </button>
                     </form>
                 </div>
@@ -89,254 +129,262 @@
     </div>
 </div>
 
-<!-- Add Car Modal -->
-<div id="addCarModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white rounded-lg p-6 w-96">
-        <h2 class="text-xl font-bold mb-4">Add New Car</h2>
-        <form th:action="@{/dashboard/car/add}" method="post" th:object="${carDto}">
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Brand</label>
-                <input type="text" th:field="*{brand}" class="w-full border rounded p-2" required>
+<!-- Modal Template -->
+<template id="modalTemplate">
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 w-full max-w-md mx-4">
+            <div class="modal-content"></div>
+        </div>
+    </div>
+</template>
+
+<!-- Add Car Modal Content -->
+<template id="addCarModalContent">
+    <h2 class="text-2xl font-bold mb-6 flex items-center text-gray-800">
+        <i class="fas fa-car text-blue-600 mr-3"></i>Add New Car
+    </h2>
+    <form th:action="@{/dashboard/car/add}" method="post" th:object="${carDto}" class="space-y-4">
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Brand</label>
+            <input type="text" th:field="*{brand}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Model</label>
+            <input type="text" th:field="*{model}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Year</label>
+            <input type="number" th:field="*{year}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Registration Number</label>
+            <input type="text" th:field="*{registrationNumber}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Number of Doors</label>
+            <input type="number" th:field="*{numberOfDoors}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Transmission Type</label>
+            <select th:field="*{transmissionType}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <option value="MANUAL">Manual</option>
+                <option value="AUTOMATIC">Automatic</option>
+            </select>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Has Airbag</label>
+            <select th:field="*{hasAirbag}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+        </div>
+        <div class="flex justify-end gap-3 mt-8">
+            <button type="button" onclick="hideModal('addCarModal')"
+                    class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-300">
+                Cancel
+            </button>
+            <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300">
+                Save
+            </button>
+        </div>
+    </form>
+</template>
+
+<!-- Add Motorcycle Modal Content -->
+<template id="addMotorcycleModalContent">
+    <h2 class="text-2xl font-bold mb-6 flex items-center text-gray-800">
+        <i class="fas fa-motorcycle text-green-600 mr-3"></i>Add New Motorcycle
+    </h2>
+    <form th:action="@{/dashboard/motorcycle/add}" method="post" th:object="${motorcycleDto}" class="space-y-4">
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Brand</label>
+            <input type="text" th:field="*{brand}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Model</label>
+            <input type="text" th:field="*{model}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Year</label>
+            <input type="number" th:field="*{year}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Registration Number</label>
+            <input type="text" th:field="*{registrationNumber}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Chain Type</label>
+            <select th:field="*{chainType}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:green-500 focus:border-green-500" required>
+                <option value="CHAIN">Chain</option>
+                <option value="BELT">Belt</option>
+                <option value="SHAFT">Shaft</option>
+            </select>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Has Kickstand</label>
+            <select th:field="*{hasKickstand}" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+        </div>
+        <div class="flex justify-end gap-3 mt-8">
+            <button type="button" onclick="hideModal('addMotorcycleModal')"
+                    class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-300">
+                Cancel
+            </button>
+            <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
+                Save
+            </button>
+        </div>
+    </form>
+</template>
+
+<!-- Edit Vehicle Modal -->
+<template id="editVehicleModalContent">
+    <h2 class="text-2xl font-bold mb-6 flex items-center text-gray-800">
+        <i id="editVehicleIcon" class="mr-3"></i>Edit Vehicle
+    </h2>
+    <form id="editVehicleForm" method="post" class="space-y-4">
+        <input type="hidden" id="editVehicleId" name="id">
+        <input type="hidden" id="editVehicleType" name="vehicleType">
+
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Brand</label>
+            <input type="text" id="editBrand" name="brand" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Model</label>
+            <input type="text" id="editModel" name="model" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Year</label>
+            <input type="number" id="editYear" name="year" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+        </div>
+        <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700">Registration Number</label>
+            <input type="text" id="editRegistrationNumber" name="registrationNumber" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+        </div>
+
+        <!-- Car-specific fields -->
+        <div id="editCarFields" class="hidden space-y-4">
+            <div class="space-y-1">
+                <label class="block text-sm font-medium text-gray-700">Number of Doors</label>
+                <input type="number" id="editNumberOfDoors" name="numberOfDoors" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Model</label>
-                <input type="text" th:field="*{model}" class="w-full border rounded p-2" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Year</label>
-                <input type="number" th:field="*{year}" class="w-full border rounded p-2" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Registration Number</label>
-                <input type="text" th:field="*{registrationNumber}" class="w-full border rounded p-2" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Number of Doors</label>
-                <input type="number" th:field="*{numberOfDoors}" class="w-full border rounded p-2" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Transmission Type</label>
-                <select th:field="*{transmissionType}" class="w-full border rounded p-2" required>
+            <div class="space-y-1">
+                <label class="block text-sm font-medium text-gray-700">Transmission Type</label>
+                <select id="editTransmissionType" name="transmissionType" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="MANUAL">Manual</option>
                     <option value="AUTOMATIC">Automatic</option>
                 </select>
             </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Has Airbag</label>
-                <select th:field="*{hasAirbag}" class="w-full border rounded p-2" required>
+            <div class="space-y-1">
+                <label class="block text-sm font-medium text-gray-700">Has Airbag</label>
+                <select id="editHasAirbag" name="hasAirbag" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="true">Yes</option>
                     <option value="false">No</option>
                 </select>
             </div>
-            <div class="flex justify-end gap-2">
-                <button type="button" onclick="hideModal('addCarModal')"
-                        class="bg-gray-500 text-white px-4 py-2 rounded">
-                    Cancel
-                </button>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-                    Save
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+        </div>
 
-<!-- Add Motorcycle Modal -->
-<div id="addMotorcycleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white rounded-lg p-6 w-96">
-        <h2 class="text-xl font-bold mb-4">Add New Motorcycle</h2>
-        <form th:action="@{/dashboard/motorcycle/add}" method="post" th:object="${motorcycleDto}">
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Brand</label>
-                <input type="text" th:field="*{brand}" class="w-full border rounded p-2" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Model</label>
-                <input type="text" th:field="*{model}" class="w-full border rounded p-2" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Year</label>
-                <input type="number" th:field="*{year}" class="w-full border rounded p-2" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Registration Number</label>
-                <input type="text" th:field="*{registrationNumber}" class="w-full border rounded p-2" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Chain Type</label>
-                <select th:field="*{chainType}" class="w-full border rounded p-2" required>
+        <!-- Motorcycle-specific fields -->
+        <div id="editMotorcycleFields" class="hidden space-y-4">
+            <div class="space-y-1">
+                <label class="block text-sm font-medium text-gray-700">Chain Type</label>
+                <select id="editChainType" name="chainType" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                     <option value="CHAIN">Chain</option>
                     <option value="BELT">Belt</option>
                     <option value="SHAFT">Shaft</option>
                 </select>
             </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Has Kickstand</label>
-                <select th:field="*{hasKickstand}" class="w-full border rounded p-2" required>
+            <div class="space-y-1">
+                <label class="block text-sm font-medium text-gray-700">Has Kickstand</label>
+                <select id="editHasKickstand" name="hasKickstand" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                     <option value="true">Yes</option>
                     <option value="false">No</option>
                 </select>
             </div>
-            <div class="flex justify-end gap-2">
-                <button type="button" onclick="hideModal('addMotorcycleModal')"
-                        class="bg-gray-500 text-white px-4 py-2 rounded">
-                    Cancel
-                </button>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-                    Save
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+        </div>
 
-<!-- Edit Vehicle Modal -->
-<div id="editVehicleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white rounded-lg p-6 w-96">
-        <h2 class="text-xl font-bold mb-4">Edit Vehicle</h2>
-        <form id="editVehicleForm" method="post">
-            <!-- Important: Add name attribute to id field -->
-            <input type="hidden" id="editVehicleId" name="id" required>
-            <input type="hidden" id="editVehicleType" name="vehicleType">
-
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Brand</label>
-                <input type="text" id="editBrand" name="brand" class="w-full border rounded p-2" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Model</label>
-                <input type="text" id="editModel" name="model" class="w-full border rounded p-2" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Year</label>
-                <input type="number" id="editYear" name="year" class="w-full border rounded p-2" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Registration Number</label>
-                <input type="text" id="editRegistrationNumber" name="registrationNumber" class="w-full border rounded p-2" required>
-            </div>
-
-            <!-- Car-specific fields -->
-            <div id="editCarFields" class="hidden">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Number of Doors</label>
-                    <input type="number" id="editNumberOfDoors" name="numberOfDoors" class="w-full border rounded p-2">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Transmission Type</label>
-                    <select id="editTransmissionType" name="transmissionType" class="w-full border rounded p-2">
-                        <option value="MANUAL">Manual</option>
-                        <option value="AUTOMATIC">Automatic</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Has Airbag</label>
-                    <select id="editHasAirbag" name="hasAirbag" class="w-full border rounded p-2">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Motorcycle-specific fields -->
-            <div id="editMotorcycleFields" class="hidden">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Chain Type</label>
-                    <select id="editChainType" name="chainType" class="w-full border rounded p-2">
-                        <option value="CHAIN">Chain</option>
-                        <option value="BELT">Belt</option>
-                        <option value="SHAFT">Shaft</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Has Kickstand</label>
-                    <select id="editHasKickstand" name="hasKickstand" class="w-full border rounded p-2">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-2">
-                <button type="button" onclick="hideModal('editVehicleModal')"
-                        class="bg-gray-500 text-white px-4 py-2 rounded">
-                    Cancel
-                </button>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-                    Update
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+        <div class="flex justify-end gap-3 mt-8">
+            <button type="button" onclick="hideModal('editVehicleModal')"
+                    class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-300">
+                Cancel
+            </button>
+            <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300">
+                Update
+            </button>
+        </div>
+    </form>
+</template>
 
 <script>
     function showModal(modalId) {
-        document.getElementById(modalId).classList.remove('hidden');
+        const template = document.getElementById('modalTemplate');
+        const modalContent = document.getElementById(`${modalId}Content`);
+        const clone = template.content.cloneNode(true);
+
+        clone.querySelector('.modal-content').appendChild(modalContent.content.cloneNode(true));
+        document.body.appendChild(clone);
+
+        const modal = document.querySelector('.fixed');
+        modal.id = modalId;
     }
 
     function hideModal(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.remove();
+        }
     }
 
     function showEditModal(button) {
-    const jenisKendaraan = button.getAttribute('data-type');
-    const modal = document.getElementById('editVehicleModal');
-    const form = document.getElementById('editVehicleForm');
-    const idKendaraan = button.getAttribute('data-id');
+        const vehicleType = button.getAttribute('data-type');
+        const modal = document.getElementById('modalTemplate').content.cloneNode(true);
+        const modalContent = document.getElementById('editVehicleModalContent').content.cloneNode(true);
 
-    // Setel action form sesuai jenis kendaraan
-    form.action = jenisKendaraan === 'CAR'
-        ? `/dashboard/car/update/${idKendaraan}`
-        : `/dashboard/motorcycle/update/${idKendaraan}`;
+        modal.querySelector('.modal-content').appendChild(modalContent);
+        document.body.appendChild(modal);
 
-    // Setel nilai field umum
-    document.getElementById('editVehicleId').value = idKendaraan;
-    document.getElementById('editVehicleType').value = jenisKendaraan;
-    document.getElementById('editBrand').value = button.getAttribute('data-brand');
-    document.getElementById('editModel').value = button.getAttribute('data-model');
-    document.getElementById('editYear').value = button.getAttribute('data-year');
-    document.getElementById('editRegistrationNumber').value = button.getAttribute('data-registration');
+        const modalElement = document.querySelector('.fixed');
+        modalElement.id = 'editVehicleModal';
 
-    // Tampilkan field sesuai jenis kendaraan
-    const fieldMobil = document.getElementById('editCarFields');
-    const fieldMotor = document.getElementById('editMotorcycleFields');
+        // Set form action and icon
+        const form = modalElement.querySelector('#editVehicleForm');
+        form.action = vehicleType === 'CAR'
+            ? `/dashboard/car/update/${button.getAttribute('data-id')}`
+            : `/dashboard/motorcycle/update/${button.getAttribute('data-id')}`;
 
-    if (jenisKendaraan === 'CAR') {
-        fieldMobil.classList.remove('hidden');
-        fieldMotor.classList.add('hidden');
-        document.getElementById('editNumberOfDoors').value = button.getAttribute('data-doors');
-        document.getElementById('editTransmissionType').value = button.getAttribute('data-transmission');
-        document.getElementById('editHasAirbag').value = button.getAttribute('data-airbag');
-    } else {
-        fieldMobil.classList.add('hidden');
-        fieldMotor.classList.remove('hidden');
-        document.getElementById('editChainType').value = button.getAttribute('data-chain');
-        document.getElementById('editHasKickstand').value = button.getAttribute('data-kickstand');
-    }
+        const icon = modalElement.querySelector('#editVehicleIcon');
+        icon.className = vehicleType === 'CAR'
+            ? 'fas fa-car text-blue-600 mr-3'
+            : 'fas fa-motorcycle text-green-600 mr-3';
 
-    modal.classList.remove('hidden');
-}
+        // Set form fields
+        modalElement.querySelector('#editVehicleId').value = button.getAttribute('data-id');
+        modalElement.querySelector('#editVehicleType').value = vehicleType;
+        modalElement.querySelector('#editBrand').value = button.getAttribute('data-brand');
+        modalElement.querySelector('#editModel').value = button.getAttribute('data-model');
+        modalElement.querySelector('#editYear').value = button.getAttribute('data-year');
+        modalElement.querySelector('#editRegistrationNumber').value = button.getAttribute('data-registration');
 
-// Tangani submit form
-document.getElementById('editVehicleForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const formData = new FormData(this);
-    const dataKendaraan = {};
+        // Show/hide type-specific fields
+        const carFields = modalElement.querySelector('#editCarFields');
+        const motorcycleFields = modalElement.querySelector('#editMotorcycleFields');
 
-    formData.forEach((nilai, kunci) => {
-        if (nilai === 'true' || nilai === 'false') {
-            dataKendaraan[kunci] = nilai === 'true';
-        } else if (!isNaN(nilai) && nilai !== '' && kunci !== 'registrationNumber') {
-            dataKendaraan[kunci] = Number(nilai);
+        if (vehicleType === 'CAR') {
+            carFields.classList.remove('hidden');
+            motorcycleFields.classList.add('hidden');
+            modalElement.querySelector('#editNumberOfDoors').value = button.getAttribute('data-doors');
+            modalElement.querySelector('#editTransmissionType').value = button.getAttribute('data-transmission');
+            modalElement.querySelector('#editHasAirbag').value = button.getAttribute('data-airbag');
         } else {
-            dataKendaraan[kunci] = nilai;
+            carFields.classList.add('hidden');
+            motorcycleFields.classList.remove('hidden');
+            modalElement.querySelector('#editChainType').value = button.getAttribute('data-chain');
+            modalElement.querySelector('#editHasKickstand').value = button.getAttribute('data-kickstand');
         }
-    });
-
-    // Kirim request update menggunakan metode POST biasa
-    this.submit();
-});
+    }
 </script>
 </body>
 </html>

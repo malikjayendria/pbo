@@ -34,45 +34,58 @@ public class DashboardController {
     }
 
     @PostMapping("/car/add")
-    public String addCar(@ModelAttribute CarDto carDto, @SessionAttribute(name = "userId", required = false) Long userId) {
+    public String tambahMobil(@ModelAttribute CarDto carDto,
+                              @SessionAttribute(name = "userId", required = false) Long userId) {
         if (userId == null) {
-            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+            return "redirect:/login";
         }
         carService.saveCar(carDto, userId);
         return "redirect:/dashboard";
     }
 
     @PostMapping("/motorcycle/add")
-    public String addMotorcycle(@ModelAttribute MotorcycleDto motorcycleDto, @SessionAttribute(name = "userId", required = false) Long userId) {
+    public String tambahMotor(@ModelAttribute MotorcycleDto motorcycleDto,
+                              @SessionAttribute(name = "userId", required = false) Long userId) {
         if (userId == null) {
-            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+            return "redirect:/login";
         }
         motorcycleService.saveMotorcycle(motorcycleDto, userId);
         return "redirect:/dashboard";
     }
 
-    @PostMapping("/car/update")
-    public String updateCar(@ModelAttribute CarDto carDto, @SessionAttribute(name = "userId", required = false) Long userId) {
+    @PostMapping("/car/update/{id}")
+    public String perbaruiMobil(@PathVariable Long id,
+                                @ModelAttribute CarDto carDto,
+                                @SessionAttribute(name = "userId", required = false) Long userId) {
         if (userId == null) {
-            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+            return "redirect:/login";
         }
+
+        // Pastikan id kendaraan sesuai dengan yang akan diupdate
+        carDto.setId(id);
         carService.updateCar(carDto, userId);
         return "redirect:/dashboard";
     }
 
-    @PostMapping("/motorcycle/update")
-    public String updateMotorcycle(@ModelAttribute MotorcycleDto motorcycleDto, @SessionAttribute(name = "userId", required = false) Long userId) {
+    @PostMapping("/motorcycle/update/{id}")
+    public String perbaruiMotor(@PathVariable Long id,
+                                @ModelAttribute MotorcycleDto motorcycleDto,
+                                @SessionAttribute(name = "userId", required = false) Long userId) {
         if (userId == null) {
-            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+            return "redirect:/login";
         }
+
+        // Pastikan id kendaraan sesuai dengan yang akan diupdate
+        motorcycleDto.setId(id);
         motorcycleService.updateMotorcycle(motorcycleDto, userId);
         return "redirect:/dashboard";
     }
 
     @PostMapping("/vehicle/delete/{id}")
-    public String deleteVehicle(@PathVariable Long id, @SessionAttribute(name = "userId", required = false) Long userId) {
+    public String hapusKendaraan(@PathVariable Long id,
+                                 @SessionAttribute(name = "userId", required = false) Long userId) {
         if (userId == null) {
-            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+            return "redirect:/login";
         }
         vehicleService.deleteVehicle(id);
         return "redirect:/dashboard";

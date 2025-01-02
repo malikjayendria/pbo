@@ -20,8 +20,4 @@ public class Car extends Vehicle {
     public void setTransmissionType(String transmissionType) { this.transmissionType = transmissionType; }
     public void setHasAirbag(Boolean hasAirbag) { this.hasAirbag = hasAirbag; }
 
-    @PrePersist
-    public void setVehicleType() {
-        super.setVehicleType("CAR");
-    }
 }

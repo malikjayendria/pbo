@@ -19,7 +19,7 @@ public abstract class Vehicle {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "vehicle_type", insertable = false, updatable = false)
+    @Column(name = "vehicle_type")
     private String vehicleType;
 
     // Getters
@@ -38,5 +38,13 @@ public abstract class Vehicle {
     public void setYear(Integer year) { this.year = year; }
     public void setRegistrationNumber(String registrationNumber) { this.registrationNumber = registrationNumber; }
     public void setUser(User user) { this.user = user; }
-    public void setVehicleType(String vehicleType) { this.vehicleType = vehicleType; }
+
+    @PrePersist
+    public void setVehicleType() {
+        if (this instanceof Car) {
+            this.vehicleType = "CAR";
+        } else if (this instanceof Motorcycle) {
+            this.vehicleType = "MOTORCYCLE";
+        }
+    }
 }

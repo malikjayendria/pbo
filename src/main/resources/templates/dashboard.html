@@ -59,8 +59,19 @@
 
                 <!-- Actions -->
                 <div class="flex justify-end gap-2 mt-4">
+                    <!-- Di bagian tombol edit dalam card vehicle -->
                     <button onclick="showEditModal(this)"
-                            th:data-vehicle="${vehicle}"
+                            th:attr="data-id=${vehicle.id},
+                 data-type=${vehicle.vehicleType},
+                 data-brand=${vehicle.brand},
+                 data-model=${vehicle.model},
+                 data-year=${vehicle.year},
+                 data-registration=${vehicle.registrationNumber},
+                 data-doors=${vehicle.vehicleType == 'CAR' ? vehicle.numberOfDoors : ''},
+                 data-transmission=${vehicle.vehicleType == 'CAR' ? vehicle.transmissionType : ''},
+                 data-airbag=${vehicle.vehicleType == 'CAR' ? vehicle.hasAirbag : ''},
+                 data-chain=${vehicle.vehicleType == 'MOTORCYCLE' ? vehicle.chainType : ''},
+                 data-kickstand=${vehicle.vehicleType == 'MOTORCYCLE' ? vehicle.hasKickstand : ''}"
                             class="bg-yellow-500 text-white px-3 py-1 rounded">
                         Edit
                     </button>
@@ -183,8 +194,9 @@
 <div id="editVehicleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
     <div class="bg-white rounded-lg p-6 w-96">
         <h2 class="text-xl font-bold mb-4">Edit Vehicle</h2>
-        <form id="editVehicleForm" th:action="@{/dashboard/vehicle/update}" method="post">
-            <input type="hidden" id="editVehicleId" name="id">
+        <form id="editVehicleForm" method="post">
+            <!-- Important: Add name attribute to id field -->
+            <input type="hidden" id="editVehicleId" name="id" required>
             <input type="hidden" id="editVehicleType" name="vehicleType">
 
             <div class="mb-4">
@@ -258,7 +270,6 @@
     </div>
 </div>
 
-<!-- JavaScript -->
 <script>
     function showModal(modalId) {
         document.getElementById(modalId).classList.remove('hidden');
@@ -269,36 +280,63 @@
     }
 
     function showEditModal(button) {
-        const vehicle = JSON.parse(button.getAttribute('data-vehicle'));
-        const modal = document.getElementById('editVehicleModal');
+    const jenisKendaraan = button.getAttribute('data-type');
+    const modal = document.getElementById('editVehicleModal');
+    const form = document.getElementById('editVehicleForm');
+    const idKendaraan = button.getAttribute('data-id');
 
-        // Set common fields
-        document.getElementById('editVehicleId').value = vehicle.id;
-        document.getElementById('editVehicleType').value = vehicle.vehicleType;
-        document.getElementById('editBrand').value = vehicle.brand;
-        document.getElementById('editModel').value = vehicle.model;
-        document.getElementById('editYear').value = vehicle.year;
-        document.getElementById('editRegistrationNumber').value = vehicle.registrationNumber;
+    // Setel action form sesuai jenis kendaraan
+    form.action = jenisKendaraan === 'CAR'
+        ? `/dashboard/car/update/${idKendaraan}`
+        : `/dashboard/motorcycle/update/${idKendaraan}`;
 
-        // Show/hide specific fields based on vehicle type
-        const carFields = document.getElementById('editCarFields');
-        const motorcycleFields = document.getElementById('editMotorcycleFields');
+    // Setel nilai field umum
+    document.getElementById('editVehicleId').value = idKendaraan;
+    document.getElementById('editVehicleType').value = jenisKendaraan;
+    document.getElementById('editBrand').value = button.getAttribute('data-brand');
+    document.getElementById('editModel').value = button.getAttribute('data-model');
+    document.getElementById('editYear').value = button.getAttribute('data-year');
+    document.getElementById('editRegistrationNumber').value = button.getAttribute('data-registration');
 
-        if (vehicle.vehicleType === 'CAR') {
-            carFields.classList.remove('hidden');
-            motorcycleFields.classList.add('hidden');
-            document.getElementById('editNumberOfDoors').value = vehicle.numberOfDoors;
-            document.getElementById('editTransmissionType').value = vehicle.transmissionType;
-            document.getElementById('editHasAirbag').value = vehicle.hasAirbag;
-        } else {
-            carFields.classList.add('hidden');
-            motorcycleFields.classList.remove('hidden');
-            document.getElementById('editChainType').value = vehicle.chainType;
-            document.getElementById('editHasKickstand').value = vehicle.hasKickstand;
-        }
+    // Tampilkan field sesuai jenis kendaraan
+    const fieldMobil = document.getElementById('editCarFields');
+    const fieldMotor = document.getElementById('editMotorcycleFields');
 
-        modal.classList.remove('hidden');
+    if (jenisKendaraan === 'CAR') {
+        fieldMobil.classList.remove('hidden');
+        fieldMotor.classList.add('hidden');
+        document.getElementById('editNumberOfDoors').value = button.getAttribute('data-doors');
+        document.getElementById('editTransmissionType').value = button.getAttribute('data-transmission');
+        document.getElementById('editHasAirbag').value = button.getAttribute('data-airbag');
+    } else {
+        fieldMobil.classList.add('hidden');
+        fieldMotor.classList.remove('hidden');
+        document.getElementById('editChainType').value = button.getAttribute('data-chain');
+        document.getElementById('editHasKickstand').value = button.getAttribute('data-kickstand');
     }
+
+    modal.classList.remove('hidden');
+}
+
+// Tangani submit form
+document.getElementById('editVehicleForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const dataKendaraan = {};
+
+    formData.forEach((nilai, kunci) => {
+        if (nilai === 'true' || nilai === 'false') {
+            dataKendaraan[kunci] = nilai === 'true';
+        } else if (!isNaN(nilai) && nilai !== '' && kunci !== 'registrationNumber') {
+            dataKendaraan[kunci] = Number(nilai);
+        } else {
+            dataKendaraan[kunci] = nilai;
+        }
+    });
+
+    // Kirim request update menggunakan metode POST biasa
+    this.submit();
+});
 </script>
 </body>
 </html>

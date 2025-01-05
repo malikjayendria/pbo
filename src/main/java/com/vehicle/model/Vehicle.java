@@ -22,7 +22,6 @@ public abstract class Vehicle {
     @Column(name = "vehicle_type")
     private String vehicleType;
 
-    // Getters
     public Long getId() { return id; }
     public String getBrand() { return brand; }
     public String getModel() { return model; }
@@ -31,7 +30,6 @@ public abstract class Vehicle {
     public User getUser() { return user; }
     public String getVehicleType() { return vehicleType; }
 
-    // Setters
     public void setId(Long id) { this.id = id; }
     public void setBrand(String brand) { this.brand = brand; }
     public void setModel(String model) { this.model = model; }

@@ -10,7 +10,6 @@ public class CarDto {
     private String transmissionType;
     private Boolean hasAirbag;
 
-    // Getters
     public Long getId() { return id; }
     public String getBrand() { return brand; }
     public String getModel() { return model; }
@@ -20,7 +19,6 @@ public class CarDto {
     public String getTransmissionType() { return transmissionType; }
     public Boolean getHasAirbag() { return hasAirbag; }
 
-    // Setters
     public void setId(Long id) { this.id = id; }
     public void setBrand(String brand) { this.brand = brand; }
     public void setModel(String model) { this.model = model; }

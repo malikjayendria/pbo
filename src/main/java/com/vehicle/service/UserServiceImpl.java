@@ -18,6 +18,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(userDto.getPassword()); // In real app, encrypt password
         user.setFullName(userDto.getFullName());
         user.setEmail(userDto.getEmail());
+        user.setRole(userDto.getRole()); // Pastikan role di-set dari userDto
         return userRepository.save(user);
     }
 

@@ -9,7 +9,6 @@ public class MotorcycleDto {
     private String chainType;
     private Boolean hasKickstand;
 
-    // Getters
     public Long getId() { return id; }
     public String getBrand() { return brand; }
     public String getModel() { return model; }
@@ -18,7 +17,6 @@ public class MotorcycleDto {
     public String getChainType() { return chainType; }
     public Boolean getHasKickstand() { return hasKickstand; }
 
-    // Setters
     public void setId(Long id) { this.id = id; }
     public void setBrand(String brand) { this.brand = brand; }
     public void setModel(String model) { this.model = model; }

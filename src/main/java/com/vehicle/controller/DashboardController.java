@@ -1,5 +1,8 @@
 package com.vehicle.controller;
 
+import com.vehicle.dto.UserDto;
+import com.vehicle.model.User;
+import com.vehicle.service.UserServiceImpl;
 import com.vehicle.service.VehicleService;
 import com.vehicle.service.CarService;
 import com.vehicle.service.MotorcycleService;
@@ -21,13 +24,31 @@ public class DashboardController {
 
     @Autowired
     private MotorcycleService motorcycleService;
+    private UserServiceImpl userService;
+
+    @Autowired
+    public DashboardController(VehicleService vehicleService, CarService carService, MotorcycleService motorcycleService, UserServiceImpl userService) {
+        this.vehicleService = vehicleService;
+        this.carService = carService;
+        this.motorcycleService = motorcycleService;
+        this.userService = userService;
+    }
 
     @GetMapping
     public String dashboard(@SessionAttribute(name = "userId", required = false) Long userId, Model model) {
         if (userId == null) {
-            return "redirect:/login"; // Redirect ke login jika userId tidak ada
+            return "redirect:/login";
         }
-        model.addAttribute("vehicles", vehicleService.getVehiclesByUserId(userId));
+
+        User user = userService.getUserById(userId);
+//        if (user.getRole().equals("ADMIN")) {
+//            model.addAttribute("vehicles", vehicleService.getAllVehicles());
+//        } else {
+//            model.addAttribute("vehicles", vehicleService.getVehiclesByUserId(userId));
+//        }
+
+        model.addAttribute("vehicles", vehicleService.getAllVehicles());
+        model.addAttribute("userRole", user.getRole());
         model.addAttribute("carDto", new CarDto());
         model.addAttribute("motorcycleDto", new MotorcycleDto());
         return "dashboard";
@@ -39,6 +60,12 @@ public class DashboardController {
         if (userId == null) {
             return "redirect:/login";
         }
+
+        User user = userService.getUserById(userId);
+        if (!user.getRole().equals("ADMIN")) {
+            return "redirect:/dashboard";
+        }
+
         carService.saveCar(carDto, userId);
         return "redirect:/dashboard";
     }
@@ -49,6 +76,12 @@ public class DashboardController {
         if (userId == null) {
             return "redirect:/login";
         }
+
+        User user = userService.getUserById(userId);
+        if (!user.getRole().equals("ADMIN")) {
+            return "redirect:/dashboard";
+        }
+
         motorcycleService.saveMotorcycle(motorcycleDto, userId);
         return "redirect:/dashboard";
     }
@@ -61,7 +94,11 @@ public class DashboardController {
             return "redirect:/login";
         }
 
-        // Pastikan id kendaraan sesuai dengan yang akan diupdate
+        User user = userService.getUserById(userId);
+        if (!user.getRole().equals("ADMIN")) {
+            return "redirect:/dashboard";
+        }
+
         carDto.setId(id);
         carService.updateCar(carDto, userId);
         return "redirect:/dashboard";
@@ -75,7 +112,11 @@ public class DashboardController {
             return "redirect:/login";
         }
 
-        // Pastikan id kendaraan sesuai dengan yang akan diupdate
+        User user = userService.getUserById(userId);
+        if (!user.getRole().equals("ADMIN")) {
+            return "redirect:/dashboard";
+        }
+
         motorcycleDto.setId(id);
         motorcycleService.updateMotorcycle(motorcycleDto, userId);
         return "redirect:/dashboard";
@@ -87,6 +128,12 @@ public class DashboardController {
         if (userId == null) {
             return "redirect:/login";
         }
+
+        User user = userService.getUserById(userId);
+        if (!user.getRole().equals("ADMIN")) {
+            return "redirect:/dashboard";
+        }
+
         vehicleService.deleteVehicle(id);
         return "redirect:/dashboard";
     }

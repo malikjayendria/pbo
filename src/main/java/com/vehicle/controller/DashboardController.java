@@ -1,17 +1,18 @@
 package com.vehicle.controller;
 
-import com.vehicle.dto.UserDto;
+import com.vehicle.dto.RentDto;
+import com.vehicle.model.Rent;
 import com.vehicle.model.User;
-import com.vehicle.service.UserServiceImpl;
-import com.vehicle.service.VehicleService;
-import com.vehicle.service.CarService;
-import com.vehicle.service.MotorcycleService;
+import com.vehicle.service.*;
 import com.vehicle.dto.CarDto;
 import com.vehicle.dto.MotorcycleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/dashboard")
@@ -21,6 +22,9 @@ public class DashboardController {
 
     @Autowired
     private CarService carService;
+
+    @Autowired
+    private RentService rentService;
 
     @Autowired
     private MotorcycleService motorcycleService;
@@ -41,16 +45,20 @@ public class DashboardController {
         }
 
         User user = userService.getUserById(userId);
-//        if (user.getRole().equals("ADMIN")) {
-//            model.addAttribute("vehicles", vehicleService.getAllVehicles());
-//        } else {
-//            model.addAttribute("vehicles", vehicleService.getVehiclesByUserId(userId));
-//        }
 
         model.addAttribute("vehicles", vehicleService.getAllVehicles());
         model.addAttribute("userRole", user.getRole());
         model.addAttribute("carDto", new CarDto());
         model.addAttribute("motorcycleDto", new MotorcycleDto());
+
+        List<Rent> rents = rentService.getRentsByUserId(userId);
+        model.addAttribute("rents", rents);
+
+        if (user.getRole().equals("ADMIN")) {
+            List<Rent> allRents = rentService.getAllRents();
+            model.addAttribute("allRents", allRents);
+        }
+
         return "dashboard";
     }
 
@@ -135,6 +143,24 @@ public class DashboardController {
         }
 
         vehicleService.deleteVehicle(id);
+        return "redirect:/dashboard";
+    }
+
+    @PostMapping("/vehicle/rent")
+    public String rentVehicle(@ModelAttribute RentDto rentDto,
+                              @SessionAttribute(name = "userId", required = false) Long userId,
+                              RedirectAttributes redirectAttributes) {
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            Rent rent = rentService.rentVehicle(rentDto, userId);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/dashboard";
+        }
+
         return "redirect:/dashboard";
     }
 }

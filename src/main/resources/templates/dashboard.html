@@ -38,7 +38,9 @@
   pointer-events: none;
 }
 </style>
-
+<div th:if="${errorMessage}" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+    <span th:text="${errorMessage}"></span>
+</div>
 <body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
 <div class="container mx-auto px-4 py-8">
     <!-- Header -->
@@ -160,17 +162,47 @@
                     <!-- User Actions -->
                     <div th:if="${userRole == 'USER'}">
                         <button
-                                onclick="rentVehicle(this)"
+                                onclick="showRentModal(this)"
                                 th:attr="data-id=${vehicle.id}, data-brand=${vehicle.brand}, data-model=${vehicle.model}"
                                 class="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
                         >
                             <i class="fas fa-car-side mr-2"></i>Rent
                         </button>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-8 mt-8"  th:if="${userRole == 'USER'}">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800"><i class="fas fa-list-alt mr-3 text-blue-600"></i>Your Rentals</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Rental Cards -->
+            <div th:each="rent : ${rents}" class="relative bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                <h3 class="text-xl font-semibold text-gray-800" th:text="${rent.vehicle.brand + ' ' + rent.vehicle.model}"></h3>
+                <p class="text-gray-600">Rent Date: <span th:text="${rent.rentDate}"></span></p>
+                <p class="text-gray-600">Return Date: <span th:text="${rent.returnDate}"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-8 mt-8" th:if="${userRole == 'ADMIN'}">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800"><i class="fas fa-users mr-3 text-blue-600"></i>User Rental List</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- User Rental Cards -->
+            <div th:each="rent : ${allRents}" class="relative bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                <h3 class="text-xl font-semibold text-gray-800">
+                    <span th:text="${rent.user.fullName}"></span> <!-- User Name -->
+                </h3>
+                <p class="text-gray-600">Email: <span th:text="${rent.user.email}"></span></p>
+                <p class="text-gray-600">Vehicle: <span th:text="${rent.vehicle.brand + ' ' + rent.vehicle.model}"></span></p>
+                <p class="text-gray-600">Rent Date: <span th:text="${rent.rentDate}"></span></p>
+                <p class="text-gray-600">Return Date: <span th:text="${rent.returnDate}"></span></p>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- Modal Template -->
@@ -178,6 +210,34 @@
     <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
         <div class="bg-white rounded-xl p-8 w-full max-w-md mx-4">
             <div class="modal-content"></div>
+        </div>
+    </div>
+</template>
+
+<!-- Modal Template -->
+<template id="rentModalTemplate">
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 w-full max-w-md mx-4">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Rent Vehicle</h2>
+            <form id="rentForm" method="post" th:action="@{/dashboard/vehicle/rent}">
+                <input type="hidden" id="rentVehicleId" name="vehicleId" />
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Vehicle</label>
+                    <input type="text" id="rentVehicleInfo" class="w-full px-3 py-2 border rounded-lg" readonly />
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Rent Date</label>
+                    <input type="datetime-local" id="rentDate" name="rentDate" class="w-full px-3 py-2 border rounded-lg" required />
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Return Date</label>
+                    <input type="datetime-local" id="returnDate" name="returnDate" class="w-full px-3 py-2 border rounded-lg" required />
+                </div>
+                <div class="flex justify-end gap-3 mt-8">
+                    <button type="button" onclick="hideModal()" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-300">Cancel</button>
+                    <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300">Rent</button>
+                </div>
+            </form>
         </div>
     </div>
 </template>
@@ -353,8 +413,25 @@
         modal.id = modalId;
     }
 
-    function hideModal(modalId) {
-        const modal = document.getElementById(modalId);
+    function showRentModal(button) {
+        const vehicleId = button.getAttribute('data-id');
+        const vehicleBrand = button.getAttribute('data-brand');
+        const vehicleModel = button.getAttribute('data-model');
+
+        // Show the modal
+        const template = document.getElementById('rentModalTemplate');
+        const clone = template.content.cloneNode(true);
+        document.body.appendChild(clone);
+
+        // Set the vehicle ID in the form after the modal is added to the DOM
+        document.getElementById('rentVehicleId').value = vehicleId;
+
+        // Set the vehicle information in the modal
+        document.getElementById('rentVehicleInfo').value = `${vehicleBrand} ${vehicleModel}`;
+    }
+
+    function hideModal() {
+        const modal = document.querySelector('.fixed');
         if (modal) {
             modal.remove();
         }
@@ -406,6 +483,15 @@
             modalElement.querySelector('#editHasKickstand').value = button.getAttribute('data-kickstand');
         }
     }
+</script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    if ([[${errorMessage}]] != '') {
+        var myModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        myModal.show();
+    }
+    /*]]>*/
 </script>
 </body>
 </html>

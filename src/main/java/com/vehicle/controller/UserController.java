@@ -37,7 +37,7 @@ public class UserController {
     public String loginUser (@RequestParam String username, @RequestParam String password, Model model) {
         User user = userService.loginUser (username, password);
         if (user != null) {
-            model.addAttribute("userId", user.getId()); // Simpan userId di session
+            model.addAttribute("userId", user.getId());
             return "redirect:/dashboard";
         }
         return "redirect:/login?error";
@@ -45,7 +45,7 @@ public class UserController {
 
     @PostMapping("/logout")
     public String logoutUser (SessionStatus sessionStatus) {
-        sessionStatus.setComplete(); // Menghapus session
+        sessionStatus.setComplete();
         return "redirect:/login";
     }
 }

@@ -163,4 +163,20 @@ public class DashboardController {
 
         return "redirect:/dashboard";
     }
+
+    @PostMapping("/rental/delete/{id}")
+    public String deleteRental(@PathVariable Long id,
+                               @SessionAttribute(name = "userId", required = false) Long userId) {
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        User user = userService.getUserById(userId);
+        if (!user.getRole().equals("ADMIN")) {
+            return "redirect:/dashboard";
+        }
+
+        rentService.deleteRental(id);
+        return "redirect:/dashboard";
+    }
 }

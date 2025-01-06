@@ -9,4 +9,5 @@ public interface RentService {
     Rent rentVehicle(RentDto rentDto, Long userId);
     List<Rent> getRentsByUserId(Long userId);
     List<Rent> getAllRents();
+    void deleteRental(Long id);
 }

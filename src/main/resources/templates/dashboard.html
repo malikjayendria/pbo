@@ -191,7 +191,7 @@
         <h2 class="text-2xl font-bold mb-6 text-gray-800"><i class="fas fa-users mr-3 text-blue-600"></i>User Rental List</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- User Rental Cards -->
-            <div th:each="rent : ${allRents}" class="relative bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-300">
+            <div th:each="rent : ${allRents}" class="relative bg-white rounded-xl border border-gray-200 p-6 pb-16 shadow-sm hover:shadow-md transition-all duration-300">
                 <h3 class="text-xl font-semibold text-gray-800">
                     <span th:text="${rent.user.fullName}"></span> <!-- User Name -->
                 </h3>
@@ -199,6 +199,13 @@
                 <p class="text-gray-600">Vehicle: <span th:text="${rent.vehicle.brand + ' ' + rent.vehicle.model}"></span></p>
                 <p class="text-gray-600">Rent Date: <span th:text="${rent.rentDate}"></span></p>
                 <p class="text-gray-600">Return Date: <span th:text="${rent.returnDate}"></span></p>
+
+                <form th:action="@{/dashboard/rental/delete/{id}(id=${rent.id})}" method="post" onsubmit="return confirm('Are you sure you want to delete this rental?')"
+                      class="absolute bottom-0 right-4 mb-4">
+                    <button type="submit" class="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300">
+                        <i class="fa-solid fa-clock-rotate-left mr-2"></i>End Rental
+                    </button>
+                </form>
             </div>
         </div>
     </div>

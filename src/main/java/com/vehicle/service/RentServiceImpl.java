@@ -55,4 +55,9 @@ public class RentServiceImpl implements RentService {
     public List<Rent> getAllRents() {
         return rentRepository.findAll();
     }
+
+    @Override
+    public void deleteRental(Long id) {
+        rentRepository.deleteById(id);
+    }
 }
